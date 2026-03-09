@@ -309,6 +309,7 @@ async def transcribe(file: UploadFile = File(...)):
     - No modernices el texto
     - No agregues texto que no exista
     - Si algo es ilegible, escribe [ilegible]
+    - Regresa solo el texto transcrito, sin explicaciones ni comentarios adicionales.
     """
 
     response = model.generate_content([prompt, image])
