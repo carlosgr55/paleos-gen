@@ -14,7 +14,7 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 
 app = FastAPI()
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/docs", response_class=HTMLResponse)
 async def home():
     return """
     <!DOCTYPE html>
