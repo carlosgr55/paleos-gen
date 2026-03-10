@@ -319,5 +319,5 @@ async def transcribe(file: UploadFile = File(...)):
         "text": response.text
     }
 
-# Handler para Vercel
-handler = app
+# Para Vercel - necesita acceder a 'app'
+# No es necesario usar if __name__ en serverless
