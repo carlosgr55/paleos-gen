@@ -5,12 +5,17 @@ from PIL import Image
 import io
 import os
 from dotenv import load_dotenv
+from mangum import Mangum
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-model = genai.GenerativeModel("gemini-2.5-flash")
+# Configurar Gemini API
+api_key = os.getenv("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+if api_key:
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-2.5-flash")
+else:
+    model = None
 
 app = FastAPI()
 
@@ -290,6 +295,12 @@ async def home():
 
 @app.post("/transcribe")
 async def transcribe(file: UploadFile = File(...)):
+    
+    if not model:
+        return {
+            "success": False,
+            "text": "Error: API key not configured"
+        }
 
     image_bytes = await file.read()
     image = Image.open(io.BytesIO(image_bytes))
@@ -312,12 +323,19 @@ async def transcribe(file: UploadFile = File(...)):
     - Regresa solo el texto transcrito, sin explicaciones ni comentarios adicionales.
     """
 
-    response = model.generate_content([prompt, image])
+    try:
+        response = model.generate_content([prompt, image])
+        
+        return {
+            "success": True,
+            "text": response.text
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "text": f"Error en la transcripción: {str(e)}"
+        }
 
-    return {
-        "success": True,
-        "text": response.text
-    }
+# Handler para Vercel (necesario para serverless)
+handler = Mangum(app)
 
-# Para Vercel - necesita acceder a 'app'
-# No es necesario usar if __name__ en serverless

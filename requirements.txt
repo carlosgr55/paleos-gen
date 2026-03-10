@@ -4,3 +4,4 @@ google-generativeai
 Pillow
 python-dotenv
 python-multipart
+mangum
