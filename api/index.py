@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 import google.generativeai as genai
 from PIL import Image
 import io
@@ -18,6 +19,15 @@ else:
     model = None
 
 app = FastAPI()
+
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # En producción, especifica tus dominios
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/", response_class=HTMLResponse)
 async def home():
